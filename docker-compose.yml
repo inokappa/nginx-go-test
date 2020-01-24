@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
+    networks:
+      my_net:
+        ipv4_address: 10.0.100.10
+
+  go_test:
+    build:
+      context: tests
+      dockerfile: Dockerfile
+    container_name: go-test
+    environment:
+      - URL=http://10.0.100.10
+    networks:
+      my_net:
+        ipv4_address: 10.0.100.5
+    command: tail -f /dev/null
+
+networks:
+  my_net:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 10.0.100.0/24

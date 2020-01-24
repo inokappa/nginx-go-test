@@ -1,0 +1,39 @@
+version: 2.1
+
+jobs:
+  nginx_test:
+    docker:
+      - image: circleci/golang:1.12.9
+        environment:
+          GO111MODULE: "on"
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install docker-compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+          working_directory: ./redirect
+      - run: 
+          name: Build Test Environment
+          command: |
+            docker-compose build
+          working_directory: ./redirect
+      - run: 
+          name: Start Test Environment
+          command: |
+            docker-compose up -d
+          working_directory: ./redirect
+      - run:
+          name: Run Integration Test
+          command: |
+            docker-compose exec go_test richgo test -v
+          working_directory: ./redirect
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - nginx_test
