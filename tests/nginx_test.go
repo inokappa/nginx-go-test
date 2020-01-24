@@ -18,7 +18,7 @@ var (
 	URL = os.Getenv("URL")
 )
 
-func TestApiV4(t *testing.T) {
+func TestNginx(t *testing.T) {
 	urls := []string{
 		URL + "/foo/123",
 		URL + "/bar/456",
